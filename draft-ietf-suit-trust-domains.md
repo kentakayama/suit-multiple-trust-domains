@@ -419,22 +419,23 @@ NOTE: Any changes made to Parameters in a Dependency persist in the dependent.
 
 An implementer MAY choose to place a Dependency's Envelope in the Envelope of its dependent. The dependent Envelope key for the Dependency Envelope MUST be a text string. The URI for the Dependency MUST match the text string key of the dependent's Envelope key. It is RECOMMENDED to make the text string key a resolvable URI so that a Dependency Manifest that is removed from the Envelope can still be fetched.
 
-## Encrypted Manifest Template {#template-encrypted-manifest}
+## Encryption Info Delegation Template {#template-encryption-info-delegation}
 
-The goal of the Encrypted Manifest template is to fetch and decrypt a Manifest so that it can be used as a Dependency. To use an encrypted Manifest, create a plaintext dependent, and add the encrypted Manifest as a Dependency. The dependent can include very little information.
+The goal of the Encryption Info Delegation template is to separate the role of distributing encrypted Payload.
+As an example, this template describes two manifests: the dependent Manifest contains Encryption Info having Content-Encryption Key to decrypt the encrypted Payload, and the dependency Manifest contains URI to fetch the encrypted Payload.
 
 NOTE: This template also requires the extensions defined in {{I-D.ietf-suit-firmware-encryption}}.
 
-The following Commands are added to the shared sequence:
+The following Commands are added to the shared sequence of dependent Manifest:
 
 - Set Component Index Directive (see Section 8.4.10.1 of {{I-D.ietf-suit-manifest}})
 - Set Parameters Directive (see {{suit-directive-set-parameters}}) for digest (see Section 8.4.8.6 of {{I-D.ietf-suit-manifest}}). Note that the digest MUST match the SUIT_Digest in the Dependency's suit-authentication-block (see Section 8.3 of {{I-D.ietf-suit-manifest}}).
 
-The following operations are placed into the Dependency resolution block:
+The following operations are placed into the Dependency resolution block of dependent Manifest:
 
 - Set Component Index Directive (see Section 8.4.10.1 of {{I-D.ietf-suit-manifest}})
 - Set Parameters Directive (see {{suit-directive-set-parameters}}) for
-    - URI (see Section 8.4.8.9 of {{I-D.ietf-suit-manifest}})
+    - URI (see Section 8.4.8.9 of {{I-D.ietf-suit-manifest}}) of dependency Manifest
     - Encryption Info (See {{I-D.ietf-suit-firmware-encryption}})
 - Fetch Directive (see Section 8.4.10.4 of {{I-D.ietf-suit-manifest}})
 - Dependency Integrity Condition (see {{suit-condition-dependency-integrity}})
@@ -446,7 +447,14 @@ Then, the validate block contains the following operations:
 - Check Image Match Condition (see Section 8.4.9.2 of {{I-D.ietf-suit-manifest}})
 - Process Dependency Directive (see {{suit-directive-process-dependency}})
 
-A plaintext Manifest and its encrypted Dependency may also form a composite Manifest ({{composite-manifests}}).
+The following Commands are placed into the Dependency resolution block of dependency Manifest:
+
+- Set Component Index Directive (see Section 8.4.10.1 of {{I-D.ietf-suit-manifest}})
+- Set Parameters Directive (see {{suit-directive-set-parameters}}) for
+    - URI (see Section 8.4.8.9 of {{I-D.ietf-suit-manifest}}) of encrypted Payload
+- Fetch Directive (see Section 8.4.10.4 of {{I-D.ietf-suit-manifest}}) consuming the Encryption Info above
+
+Dependency and dependent Manifests may also form an Integrated Dependency ({{integrated-dependencies}}).
 
 ## Operating on Multiple Components
 
